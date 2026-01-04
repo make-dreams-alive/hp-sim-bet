@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hogwarts World Simulator 2026 - RPG Edition</title>
+    <style>
+        :root {
+            --parchment: #f4e4bc;
+            --ink: #2c1e14;
+            --glow-color: transparent;
+            --screen-filter: none;
+        }
+        body {
+            background-color: #1a1a1a;
+            color: var(--ink);
+            font-family: 'Garamond', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden; /* Hide overflow when screen shakes */
+            filter: var(--screen-filter);
+        }
+        #game-interface {
+            width: 90%;
+            max-width: 700px;
+            background: var(--parchment);
+            padding: 40px;
+            border-radius: 5px;
+            box-shadow: 0 0 50px var(--glow-color), inset 0 0 100px rgba(0,0,0,0.1);
+            border: 2px solid #8b5a2b;
+            position: relative;
+            transition: box-shadow 0.5s ease-in-out, transform 0.1s;
+        }
+        #output { font-size: 1.2em; line-height: 1.6; min-height: 120px; margin-bottom: 20px; }
+        .stats { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.2); padding-bottom: 10px; margin-bottom: 20px; font-weight: bold; }
+        .btn-container { display: flex; flex-wrap: wrap; gap: 10px; }
+        .btn { background: #8b5a2b; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 3px; }
+        .btn:hover { background: #5d3a1a; }
+
+        /* VIDEO GAME VISUAL EFFECTS */
+        .lumos-active { --glow-color: rgba(255, 255, 200, 0.8); }
+        
+        .shake-effect { 
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; 
+            transform: translate3d(0, 0, 0);
+            backface-visibility: hidden;
+            perspective: 1000px;
+        }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+
+        .incendio-flash { --screen-filter: brightness(2) saturate(2); }
+        .protego-shield { border-color: #4dd0e1; box-shadow: 0 0 40px #4dd0e1; }
+
+    </style>
+</head>
+<body>
+
+<div id="game-interface">
+    <div class="stats">
+        <span>Location: <span id="loc-display">Great Hall</span></span>
+        <span>House: <span id="house-display">Unsorted</span></span>
+    </div>
+    <div id="output">Welcome to your magical journey.</div>
+    <div class="btn-container">
+        <!-- Existing Spells -->
+        <button class="btn" onclick="cast('Lumos')">Lumos</button>
+        <button class="btn" onclick="cast('Alohomora')">Alohomora</button>
+        <button class="btn" onclick="cast('Expelliarmus')">Expelliarmus</button>
+        
+        <!-- New Spells -->
+        <button class="btn" onclick="cast('Incendio')">Incendio</button>
+        <button class="btn" onclick="cast('Protego')">Protego</button>
+        
+        <button id="secret-btn" class="btn" style="display:none;" onclick="travel('Secret Chamber')">Enter Secret Chamber</button>
+    </div>
+</div>
+
+<script>
+    const state = { 
+        isLumosOn: false, 
+        isUnlocked: false,
+        location: "Great Hall"
+    };
+
+    function typeText(text) {
+        document.getElementById('output').innerText = text;
+    }
+
+    function travel(loc) {
+        state.location = loc;
+        document.getElementById('loc-display').innerText = loc;
+        typeText(`You have arrived at the ${loc}.`);
+    }
+
+    function cast(spell) {
+        const ui = document.getElementById('game-interface');
+        
+        // --- Spell Effects ---
+
+        if (spell === 'Lumos') {
+            state.isLumosOn = !state.isLumosOn;
+            ui.classList.toggle('lumos-active');
+            typeText(state.isLumosOn ? "The tip of your wand ignites! The parchment glows brightly." : "The light fades.");
+        } 
+        
+        else if (spell === 'Alohomora') {
+            // Screen shake effect for impact
+            ui.classList.add('shake-effect');
+            setTimeout(() => ui.classList.remove('shake-effect'), 500);
+            state.isUnlocked = true;
+            document.getElementById('secret-btn').style.display = 'inline-block';
+            typeText("A loud 'CLICK' echoes through the hall. A hidden door appears!");
+        } 
+        
+        else if (spell === 'Expelliarmus') {
+            // Intense screen flash effect
+            document.body.style.background = "#ff0000"; 
+            setTimeout(() => document.body.style.background = "#1a1a1a", 150);
+            typeText("A jet of scarlet light disarms your foe with force!");
+        }
+
+        // --- NEW SPELLS ---
+
+        else if (spell === 'Incendio') {
+            // Screen brightness spike for a fire effect
+            document.body.classList.add('incendio-flash');
+            setTimeout(() => document.body.classList.remove('incendio-flash'), 400);
+            typeText("Flames erupt from your wand tip, a burst of heat washes over the room!");
+        }
+        
+        else if (spell === 'Protego') {
+            // Visual shield on the interface boundary
+            ui.classList.add('protego-shield');
+            setTimeout(() => ui.classList.remove('protego-shield'), 1500);
+            typeText("You cast a shimmering, temporary shield around yourself.");
+        }
+    }
+</script>
+</body>
+</html>
